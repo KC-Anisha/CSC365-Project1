@@ -13,6 +13,18 @@ class CovidObject:
         self.dateDied = dateDied
         self.symptomText = symptomText
 
+    def to_dict(self) -> dict:
+        return {
+            "AGE_YRS": self.age,
+            "SEX": self.sex,
+            "VAX_NAME": self.vaxName,
+            "RPT_DATE": self.rptDate,
+            "SYMPTOMS": self.symptoms.to_dict(),
+            "DIED": self.died,
+            "DATEDIED": self.dateDied,
+            "SYMPTOM_TEXT": self.symptomText,
+        }
+
 
 class SymptomObject:
     def __init__(self, symptomName, symptomVersion):
@@ -21,6 +33,12 @@ class SymptomObject:
 
     def __repr__(self):
         return (self.symptomName + "; " + str(self.symptomVersion))
+
+    def to_dict(self) -> dict:
+        return {
+            "SYMPTOM": self.symptomName,
+            "SYMPTOMVERSION": self.symptomVersion,
+        }
 
 
 def task1():
@@ -64,6 +82,9 @@ if __name__ == '__main__':
     # Dictionary(HashMap) to store data
     hashMap = {}
 
+    # Let's keep track of the highest number of symptoms (for header creation) [46]
+    # highestNumOfSymptoms = 0
+
     # Iterate through the trimmed set and add/update the hashmap
     for index, row in Task1SetTrimmed.iterrows():
         id = row["VAERS_ID"]
@@ -88,6 +109,9 @@ if __name__ == '__main__':
             finalSymptoms.append(newSymptoms)
             obj.symptoms = finalSymptoms
             hashMap[id] = obj
+            # Check if highest number of symptoms needs to be updated
+            # if len(finalSymptoms) > highestNumOfSymptoms:
+            #     highestNumOfSymptoms = len(finalSymptoms)
         # If ID is not in Hashmap, create a new entry
         else:
             # Create an array of symptoms by going through all symptoms row
@@ -107,12 +131,38 @@ if __name__ == '__main__':
                               row["DATEDIED"], row["SYMPTOM_TEXT"])
             # Add object to the hashmap (dictionary)
             hashMap[id] = obj
+            # Check if highest number of symptoms needs to be updated
+            # if len(obj.symptoms) > highestNumOfSymptoms:
+            #     highestNumOfSymptoms = len(obj.symptoms)
 
     # # Print to test the hashmap
     # testing = hashMap[1400623]
     # print(testing.symptoms)
     # print("\n")
     # print(testing.died)
+    # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
+
+    # "AGE_YRS": self.age,
+    # "SEX": self.sex,
+    # "VAX_NAME": self.vaxName,
+    # "RPT_DATE": self.rptDate,
+    # "SYMPTOMS": self.symptoms.to_dict(),
+    # "DIED": self.died,
+    # "DATEDIED": self.dateDied,
+    # "SYMPTOM_TEXT": self.symptomText,
+
+    list_of_rows = [{'AGE_YRS': hashMap[data].age,
+                        "SEX": hashMap[data].sex,
+                        "VAX_NAME": hashMap[data].vaxName,
+                        "RPT_DATE": hashMap[data].rptDate,
+                        "SYMPTOMS": hashMap[data].symptoms,
+                        "DIED": hashMap[data].died,
+                        "DATEDIED": hashMap[data].dateDied,
+                        "SYMPTOM_TEXT": hashMap[data].symptomText} for data in hashMap]
+    df = pd.DataFrame(list_of_rows)
+    df.to_csv('SYMPTOMDATA.csv', index=False)
+
+    # print(pd.DataFrame.from_dict(hashMap,orient='index'))
 
     #     print(row["VAERS_ID"], row["SYMPTOM_TEXT"])
 
