@@ -5,7 +5,7 @@
 ### By: Anisha KC
 
 ### Project Description:
-Consider the Vaccine Adverse Events Reporting System (VAERS) maintained by CDC (https://vaers.hhs.gov/) with datasets available since 1990. Attached you find the datasets for 2020 as well as the data for 2021 (reported until August 27, 2021 ). For those interested in further analyses, all datasets are available at https://vaers.hhs.gov/data/datasets.html? 
+Consider the Vaccine Adverse Events Reporting System (VAERS) maintained by CDC (https://vaers.hhs.gov/) with datasets available since 1990. Attached you find the datasets for 2020 as well as the data for 2021 (reported until August 27, 2021 ). For those interested in further analyses, all datasets are available at https://vaers.hhs.gov/data/datasets.html
 
 The database contains reports submitted regarding adverse effects following vaccination. For a sample of the data collected you can look at the VAERSForm_Mar2021.pdf
 
