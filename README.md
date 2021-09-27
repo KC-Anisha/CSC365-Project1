@@ -42,7 +42,7 @@ From the given datasets create one dataset containing only data regarding COVID-
 
 ### TASK 2
 
-Implement Quicksort, InsertionSort and another Sorting algorithm of your choice. Create a dataset from the set created in TASK 1, containing the following information: VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT. Save the dataset as SYMPTOMDATA.csv. Since a VAERS report can contain up to 5 symptoms, the resulting dataset may contain several rows with the same VAERS_ID.  Utilize the sorts and sort your data by VAERS_ID. Use subsets of different sizes to analize the time efficiency of the running time of the three algorithms. Include the results of your empirical analyses in the final report.
+Implement Quicksort, InsertionSort and another Sorting algorithm of your choice. Create a dataset from the set created in TASK 1, containing the following information: VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT. Save the dataset as SYMPTOMDATA.csv. Since a VAERS report can contain up to 5 symptoms, the resulting dataset may contain several rows with the same VAERS_ID.  Utilize the sorts and sort your data by VAERS_ID. Use subsets of different sizes to analyze the time efficiency of the running time of the three algorithms. Include the results of your empirical analyses in the final report.
 
 ### TASK3
 
