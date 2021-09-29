@@ -5,7 +5,7 @@
 ### By: Anisha KC
 
 ### Project Description:
-Consider the Vaccine Adverse Events Reporting System (VAERS) maintained by CDC (https://vaers.hhs.gov/) with datasets available since 1990. Attached you find the datasets for 2020 as well as the data for 2021 (reported until August 27, 2021 ). For those interested in further analyses, all datasets are available at https://vaers.hhs.gov/data/datasets.html? 
+Consider the Vaccine Adverse Events Reporting System (VAERS) maintained by CDC (https://vaers.hhs.gov/) with datasets available since 1990. Attached you find the datasets for 2020 as well as the data for 2021 (reported until August 27, 2021 ). For those interested in further analyses, all datasets are available at https://vaers.hhs.gov/data/datasets.html
 
 The database contains reports submitted regarding adverse effects following vaccination. For a sample of the data collected you can look at the VAERSForm_Mar2021.pdf
 
@@ -42,7 +42,7 @@ From the given datasets create one dataset containing only data regarding COVID-
 
 ### TASK 2
 
-Implement Quicksort, InsertionSort and another Sorting algorithm of your choice. Create a dataset from the set created in TASK 1, containing the following information: VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT. Save the dataset as SYMPTOMDATA.csv. Since a VAERS report can contain up to 5 symptoms, the resulting dataset may contain several rows with the same VAERS_ID.  Utilize the sorts and sort your data by VAERS_ID. Use subsets of different sizes to analize the time efficiency of the running time of the three algorithms. Include the results of your empirical analyses in the final report.
+Implement Quicksort, InsertionSort and another Sorting algorithm of your choice. Create a dataset from the set created in TASK 1, containing the following information: VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT. Save the dataset as SYMPTOMDATA.csv. Since a VAERS report can contain up to 5 symptoms, the resulting dataset may contain several rows with the same VAERS_ID.  Utilize the sorts and sort your data by VAERS_ID. Use subsets of different sizes to analyze the time efficiency of the running time of the three algorithms. Include the results of your empirical analyses in the final report.
 
 ### TASK3
 
