@@ -1,7 +1,10 @@
 import copy
 import json
+
+import time
 import pandas as pd
 from functools import reduce
+import random
 
 
 def combineDataSets():
@@ -48,15 +51,12 @@ def task1(hashMap):
     task1Df.to_csv('VAERS_COVID_DataAugust2021.csv', index=False)
 
 
-# VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT
-
 def task2(hashMap):
     hashMapCopy = copy.deepcopy(hashMap)
     jsonForTask2 = []
     # Loop through the keys in HashMap and create a separate JSON object for each symptom
     for key in hashMapCopy:
         obj = hashMapCopy[key]
-        # for count, symptom in enumerate(obj["Symptoms"]):
         for symptom in obj["Symptoms"]:
             tempDict = {}
             tempDict["VAERS_ID"] = key
@@ -71,16 +71,45 @@ def task2(hashMap):
             jsonForTask2.append(json.loads(json.dumps(tempDict)))
     # Convert to Dataframe and then create and save CSV file
     task2Df = pd.DataFrame(jsonForTask2)
-    print(task2Df)
     task2Df.to_csv('SYMPTOMDATA.csv', index=False)
+    return jsonForTask2
+
+
+def quicksort(aList, first, last):
+    if first < last:
+        pivot = partition(aList, first, last)
+        quicksort(aList, first, pivot - 1)
+        quicksort(aList, pivot + 1, last)
+
+
+def partition(aList, first, last):
+    pivot = first + random.randrange(last - first + 1)
+    swap(aList, pivot, last)
+    for i in range(first, last):
+        if aList[i]["VAERS_ID"] <= aList[last]["VAERS_ID"]:
+            swap(aList, i, first)
+            first += 1
+
+    swap(aList, first, last)
+    return first
+
+
+def swap(A, x, y):
+    A[x], A[y] = A[y], A[x]
 
 
 if __name__ == '__main__':
     # Combine all the datasets (all CSV file) and get all the covid data from them
+    tic = time.perf_counter()
     combinedDataSet = combineDataSets()
+    toc = time.perf_counter()
+    print(f"Combined all datasets in {toc - tic:0.4f} seconds")
 
     # Convert the data into a JSON format for easier looping
+    tic = time.perf_counter()
     covidJsonData = json.loads(pd.DataFrame.to_json(combinedDataSet, orient='records'))
+    toc = time.perf_counter()
+    print(f"Converted data into JSON in {toc - tic:0.4f} seconds")
 
     # Dictionary(HashMap) to store data
     hashMap = {}
@@ -89,6 +118,7 @@ if __name__ == '__main__':
     highestNumOfSymptoms = 0
     idOfMostSymptoms = 0
 
+    tic = time.perf_counter()
     # Loop through the data and store it in a hashmap
     for row in covidJsonData:
         vaersId = row["VAERS_ID"]
@@ -129,12 +159,37 @@ if __name__ == '__main__':
         if len(obj["Symptoms"]) > highestNumOfSymptoms:
             highestNumOfSymptoms = len(obj["Symptoms"])
             idOfMostSymptoms = vaersId
+    toc = time.perf_counter()
+    print(f"Created hashMap in {toc - tic:0.4f} seconds")
 
-    # Let's convert this HashMap of JSONs a CSV file - for task 1
+    # Let's convert this HashMap of JSONs to a CSV file - for task 1
+    tic = time.perf_counter()
     task1(hashMap)
+    toc = time.perf_counter()
+    print(f"Task 1 CSV file created in {toc - tic:0.4f} seconds")
 
     # Task 2 - Create a trimmed down CSV file where each symptom gets it's own row
-    task2(hashMap)
+    tic = time.perf_counter()
+    task2Json = task2(hashMap)
+    toc = time.perf_counter()
+    print(f"Task 2 CSV file created in {toc - tic:0.4f} seconds")
+
+    # QuickSort
+    arr = copy.deepcopy(task2Json)
+    # arr = arr[1:200]
+    # random.shuffle(arr)
+    # print(pd.DataFrame(arr))
+    tic = time.perf_counter()
+    quicksort(arr, 0, len(arr) - 1)
+    toc = time.perf_counter()
+    # print(pd.DataFrame(arr))
+    print(f"Quick sorted the entire set in {toc - tic:0.4f} seconds")
+
+    tic = time.perf_counter()
+    pdObj = pd.DataFrame(arr)
+    pdObj.to_csv('testing.csv', index=False)
+    toc = time.perf_counter()
+    print(f"Created the testing file in {toc - tic:0.4f} seconds")
 
     # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
     # print("VAERS ID with the highest number of symptoms: " + str(idOfMostSymptoms))
@@ -142,18 +197,3 @@ if __name__ == '__main__':
     # print(hashMap[902418])
 
     # print(Task1SetTrimmed.loc[0,:])
-
-# NOTES
-# So we can have multiple rows of the same person, so same ID. Especially if they have more than 5 symptoms
-# So we need to read the data, and then if they have an ID that we already came across (like on a hashmap) then we
-# can just add the symptoms to the array of symptoms for that existing patient
-# PLAN for task 2 ;(
-# --> FIRST, trim data down to the columns for task2
-#       VAERS_ID, AGE_YRS, SEX, VAX_NAME, RPT_Date, SYMPTOM, DIED, DATEDIED, SYMPTOM_TEXT
-# --> SECOND, read the data line by line and store the stuff in a hashmap with VAERSID as the key
-#       If the key exists already, we can add the symptoms to the array, if not, then we create a new entry
-#       Structure of the data can be, ID is the key and some object for the value
-#       The object has all the info + an array of symptoms which itself is an array [Symptom, SymptomVersion]
-#       KEEP EMPTY SYMPTOM COLUMNS IN MIND - NEED TO ACCOUNT FOR THESE
-# --> THIRD, convert this hashmap we have into a csv file somehow, lol good luck. Save it too
-# --> FOURTH, create the 3 sorting algorithms to sort that hashmap with the ID :)) [Don't use CSV for it I think]
