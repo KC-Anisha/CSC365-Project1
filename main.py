@@ -85,6 +85,7 @@ def quicksort(aList, first, last):
 def partition(aList, first, last):
     pivot = first + random.randrange(last - first + 1)
     swap(aList, pivot, last)
+
     for i in range(first, last):
         if aList[i]["VAERS_ID"] <= aList[last]["VAERS_ID"]:
             swap(aList, i, first)
@@ -96,6 +97,175 @@ def partition(aList, first, last):
 
 def swap(A, x, y):
     A[x], A[y] = A[y], A[x]
+
+
+
+def insertionSort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        # Move elements of arr[0..i-1], that are greater than key,
+        # to one position ahead of their current position
+        j = i - 1
+        while j >= 0 and key["VAERS_ID"] < arr[j]["VAERS_ID"]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+
+def mergeSort(arr):
+    if len(arr) > 1:
+        # Finding the mid of the array
+        mid = len(arr) // 2
+        # Dividing the array elements
+        L = arr[:mid]
+        # into 2 halves
+        R = arr[mid:]
+        # Sorting the first half
+        mergeSort(L)
+        # Sorting the second half
+        mergeSort(R)
+        i = j = k = 0
+        # Copy data to temp arrays L[] and R[]
+        while i < len(L) and j < len(R):
+            if L[i]["VAERS_ID"] < R[j]["VAERS_ID"]:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+            k += 1
+        # Checking if any element was left
+        while i < len(L):
+            arr[k] = L[i]
+            i += 1
+            k += 1
+        while j < len(R):
+            arr[k] = R[j]
+            j += 1
+            k += 1
+
+
+def testQuickSort(arr, arrSize):
+    testArray = arr[1:arrSize+1]
+    random.shuffle(testArray)
+    tic = time.perf_counter()
+    quicksort(testArray, 0, len(testArray) - 1)
+    toc = time.perf_counter()
+    print(f"Quick sorted {arrSize} items in {toc - tic:0.4f} seconds")
+
+
+def doQuickSort(array):
+    arr = copy.deepcopy(array)
+
+    # Quicksort on 50
+    testQuickSort(arr, 50)
+
+    # Quicksort on 500
+    testQuickSort(arr, 500)
+
+    # Quicksort on 5,000
+    testQuickSort(arr, 5000)
+
+    # Quicksort on 10,000
+    testQuickSort(arr, 10000)
+
+    # Quicksort on 100,000
+    testQuickSort(arr, 100000)
+
+    # Quicksort the entire dataset
+    tic = time.perf_counter()
+    quicksort(arr, 0, len(arr) - 1)
+    toc = time.perf_counter()
+    print(f"Quick sorted the entire set in {toc - tic:0.4f} seconds")
+
+    # Create a CSV of the entire quick sorted set
+    tic = time.perf_counter()
+    pdObj = pd.DataFrame(arr)
+    pdObj.to_csv('quickSort.csv', index=False)
+    toc = time.perf_counter()
+    print(f"Created the quick sorted file in {toc - tic:0.4f} seconds")
+
+
+def testMergeSort(arr, arrSize):
+    testArray = arr[1:arrSize + 1]
+    random.shuffle(testArray)
+    tic = time.perf_counter()
+    mergeSort(testArray)
+    toc = time.perf_counter()
+    print(f"Merge sorted {arrSize} items in {toc - tic:0.4f} seconds")
+
+
+def doMergeSort(array):
+    arr = copy.deepcopy(array)
+
+    # Merge Sort on 50
+    testMergeSort(arr, 50)
+
+    # Merge Sort on 500
+    testMergeSort(arr, 500)
+
+    # Merge Sort on 5,000
+    testMergeSort(arr, 5000)
+
+    # Merge Sort on 10,000
+    testMergeSort(arr, 10000)
+
+    # Merge Sort on 100,000
+    testMergeSort(arr, 100000)
+
+    # Merge Sort the entire dataset
+    tic = time.perf_counter()
+    mergeSort(arr)
+    toc = time.perf_counter()
+    print(f"Merge sorted the entire set in {toc - tic:0.4f} seconds")
+
+    # Create a CSV of the entire Merge sorted set
+    tic = time.perf_counter()
+    pdObj = pd.DataFrame(arr)
+    pdObj.to_csv('mergeSort.csv', index=False)
+    toc = time.perf_counter()
+    print(f"Created the Merge sorted file in {toc - tic:0.4f} seconds")
+
+
+def testInsertionSort(arr, arrSize):
+    testArray = arr[1:arrSize + 1]
+    random.shuffle(testArray)
+    tic = time.perf_counter()
+    insertionSort(testArray)
+    toc = time.perf_counter()
+    print(f"Insertion sorted {arrSize} items in {toc - tic:0.4f} seconds")
+
+
+def doInsertionSort(array):
+    arr = copy.deepcopy(array)
+
+    # Merge Sort on 50
+    testInsertionSort(arr, 50)
+
+    # Merge Sort on 500
+    testInsertionSort(arr, 500)
+
+    # Merge Sort on 5,000
+    testInsertionSort(arr, 5000)
+
+    # Merge Sort on 10,000
+    testInsertionSort(arr, 10000)
+
+    # Merge Sort on 100,000
+    testInsertionSort(arr, 100000)
+
+    # Merge Sort the entire dataset
+    tic = time.perf_counter()
+    insertionSort(arr)
+    toc = time.perf_counter()
+    print(f"Insertion sorted the entire set in {toc - tic:0.4f} seconds")
+
+    # Create a CSV of the entire Merge sorted set
+    tic = time.perf_counter()
+    pdObj = pd.DataFrame(arr)
+    pdObj.to_csv('insertionSort.csv', index=False)
+    toc = time.perf_counter()
+    print(f"Created the Insertion sorted file in {toc - tic:0.4f} seconds")
 
 
 if __name__ == '__main__':
@@ -162,6 +332,9 @@ if __name__ == '__main__':
     toc = time.perf_counter()
     print(f"Created hashMap in {toc - tic:0.4f} seconds")
 
+    # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
+    # print("VAERS ID with the highest number of symptoms: " + str(idOfMostSymptoms))
+
     # Let's convert this HashMap of JSONs to a CSV file - for task 1
     tic = time.perf_counter()
     task1(hashMap)
@@ -174,26 +347,21 @@ if __name__ == '__main__':
     toc = time.perf_counter()
     print(f"Task 2 CSV file created in {toc - tic:0.4f} seconds")
 
+
     # QuickSort
-    arr = copy.deepcopy(task2Json)
-    # arr = arr[1:200]
-    # random.shuffle(arr)
-    # print(pd.DataFrame(arr))
-    tic = time.perf_counter()
-    quicksort(arr, 0, len(arr) - 1)
-    toc = time.perf_counter()
-    # print(pd.DataFrame(arr))
-    print(f"Quick sorted the entire set in {toc - tic:0.4f} seconds")
+    print("--------------------------------------------------")
+    doQuickSort(task2Json)
 
-    tic = time.perf_counter()
-    pdObj = pd.DataFrame(arr)
-    pdObj.to_csv('testing.csv', index=False)
-    toc = time.perf_counter()
-    print(f"Created the testing file in {toc - tic:0.4f} seconds")
+    # Merge Sort
+    print("--------------------------------------------------")
+    doMergeSort(task2Json)
 
-    # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
-    # print("VAERS ID with the highest number of symptoms: " + str(idOfMostSymptoms))
-    # print("The right number of highest symptoms: " + str(len(hashMap[1400623]["Symptoms"])))
-    # print(hashMap[902418])
+    # Insertion Sort
+    print("--------------------------------------------------")
+    doInsertionSort(task2Json)
 
-    # print(Task1SetTrimmed.loc[0,:])
+    # data = json.loads(pd.read_csv('SYMPTOMDATA.csv').to_json(orient='records'))
+    # arr = data[0:1000000]
+    # print("DOING")
+    # insertionSort(arr)
+    # print("DONE")

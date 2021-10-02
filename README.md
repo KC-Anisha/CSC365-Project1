@@ -46,4 +46,4 @@ Implement Quicksort, InsertionSort and another Sorting algorithm of your choice.
 
 ### TASK3
 
-Utilizing the dataset you created for TASK2, sort the data, grouped by age group (<1 year, 1-3 years, 4-11, 12-18, 19-30, 31-40, 41-50, 51-60, 61-70, 71-80, > 80), then by gender, then by Vaccine Name, then by symptom. For each age group, compute the number of cases that have been reported as resulting in death. While there might be multiple symptoms reported, each VAERSID should be counted only once.
+Utilizing the dataset you created for TASK2, sort the data, grouped by age group (<1 year, 1-3 years, 4-11, 12-18, 19-30, 31-40, 41-50, 51-60, 61-70, 71-80, > 80), then by gender, then by Vaccine Name. For each age group, compute the number of cases that have been reported as resulting in death. While there might be multiple symptoms reported, each VAERSID should be counted only once.
