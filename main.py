@@ -252,20 +252,20 @@ def doInsertionSort(array):
     testInsertionSort(arr, 10000)
 
     # Merge Sort on 100,000
-    testInsertionSort(arr, 100000)
+    # testInsertionSort(arr, 100000)
 
     # Merge Sort the entire dataset
-    tic = time.perf_counter()
-    insertionSort(arr)
-    toc = time.perf_counter()
-    print(f"Insertion sorted the entire set in {toc - tic:0.4f} seconds")
+    # tic = time.perf_counter()
+    # insertionSort(arr)
+    # toc = time.perf_counter()
+    # print(f"Insertion sorted the entire set in {toc - tic:0.4f} seconds")
 
     # Create a CSV of the entire Merge sorted set
-    tic = time.perf_counter()
-    pdObj = pd.DataFrame(arr)
-    pdObj.to_csv('insertionSort.csv', index=False)
-    toc = time.perf_counter()
-    print(f"Created the Insertion sorted file in {toc - tic:0.4f} seconds")
+    # tic = time.perf_counter()
+    # pdObj = pd.DataFrame(arr)
+    # pdObj.to_csv('insertionSort.csv', index=False)
+    # toc = time.perf_counter()
+    # print(f"Created the Insertion sorted file in {toc - tic:0.4f} seconds")
 
 
 if __name__ == '__main__':
@@ -288,8 +288,8 @@ if __name__ == '__main__':
     highestNumOfSymptoms = 0
     idOfMostSymptoms = 0
 
-    tic = time.perf_counter()
     # Loop through the data and store it in a hashmap
+    tic = time.perf_counter()
     for row in covidJsonData:
         vaersId = row["VAERS_ID"]
         # If ID is already in the HashMap, just update the symptoms for it
@@ -335,6 +335,8 @@ if __name__ == '__main__':
     # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
     # print("VAERS ID with the highest number of symptoms: " + str(idOfMostSymptoms))
 
+    # print(len(hashMap))
+
     # Let's convert this HashMap of JSONs to a CSV file - for task 1
     tic = time.perf_counter()
     task1(hashMap)
@@ -347,7 +349,6 @@ if __name__ == '__main__':
     toc = time.perf_counter()
     print(f"Task 2 CSV file created in {toc - tic:0.4f} seconds")
 
-
     # QuickSort
     print("--------------------------------------------------")
     doQuickSort(task2Json)
@@ -359,6 +360,143 @@ if __name__ == '__main__':
     # Insertion Sort
     print("--------------------------------------------------")
     doInsertionSort(task2Json)
+
+    # Task 3 - Group, sort and count number of deaths
+    deathCount = {'<1': 0, '1-3': 0, '4-11': 0, '12-18': 0, '19-30':0, '31-40':0, '41-50':0, '51-60':0,
+                '61-70':0, '71-80':0, '>80':0, 'Unknown': 0}
+    ageGroup = {'<1': [], '1-3': [], '4-11': [], '12-18': [], '19-30':[], '31-40':[], '41-50':[], '51-60':[],
+                '61-70':[], '71-80':[], '>80':[], 'Unknown': []}
+    genderGroup = {'Male': [], 'Female': [], 'Unknown': []}
+    vaccineGroup = {'J&J': [], 'Moderna': [], 'Pfizer': [], 'Unknown': []}
+
+    lastID = -1
+
+    # Let's loop through the dataset - Array of JSON
+    tic = time.perf_counter()
+    for patientRow in task2Json:
+        # Deal with age first, including deaths - then gender - then vaccine group
+        if patientRow["AGE_YRS"] is None:
+            ageGroup['Unknown'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['Unknown'] += 1
+        elif patientRow["AGE_YRS"] < 1:
+            ageGroup['<1'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['<1'] += 1
+        elif 1 <= patientRow["AGE_YRS"] <= 3:
+            ageGroup['1-3'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['1-3'] += 1
+        elif 4 <= patientRow["AGE_YRS"] <= 11:
+            ageGroup['4-11'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['4-11'] += 1
+        elif 12 <= patientRow["AGE_YRS"] <= 18:
+            ageGroup['12-18'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['12-18'] += 1
+        elif 19 <= patientRow["AGE_YRS"] <= 30:
+            ageGroup['19-30'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['19-30'] += 1
+        elif 31 <= patientRow["AGE_YRS"] <= 40:
+            ageGroup['31-40'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['31-40'] += 1
+        elif 41 <= patientRow["AGE_YRS"] <= 50:
+            ageGroup['41-50'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['41-50'] += 1
+        elif 51 <= patientRow["AGE_YRS"] <= 60:
+            ageGroup['51-60'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['51-60'] += 1
+        elif 61 <= patientRow["AGE_YRS"] <= 70:
+            ageGroup['61-70'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['61-70'] += 1
+        elif 71 <= patientRow["AGE_YRS"] <= 80:
+            ageGroup['71-80'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['71-80'] += 1
+        elif patientRow["AGE_YRS"] > 80:
+            ageGroup['>80'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['>80'] += 1
+        else:
+            ageGroup['Unknown'].append(patientRow)
+            if lastID != patientRow["VAERS_ID"] or lastID == -1:
+                if patientRow["DIED"] == 'Y':
+                    deathCount['Unknown'] += 1
+        # Update lastID so we don't count death multiple times for same patient
+        lastID = patientRow["VAERS_ID"]
+        # Deal with gender grouping
+        if patientRow['SEX'] == 'M':
+            genderGroup['Male'].append(patientRow)
+        elif patientRow['SEX'] == 'F':
+            genderGroup['Female'].append(patientRow)
+        else:
+            genderGroup['Unknown'].append(patientRow)
+        # Deal with Vaccine grouping
+        if patientRow['VAX_NAME'] == 'COVID19 (COVID19 (JANSSEN))':
+            vaccineGroup['J&J'].append(patientRow)
+        elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (MODERNA))':
+            vaccineGroup['Moderna'].append(patientRow)
+        elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (PFIZER-BIONTECH))':
+            vaccineGroup['Pfizer'].append(patientRow)
+        else:
+            vaccineGroup['Unknown'].append(patientRow)
+
+    toc = time.perf_counter()
+    print("--------------------------------------------------")
+    print(f"Data grouped in {toc - tic:0.4f} seconds")
+
+    # Sort the data groups
+    tic = time.perf_counter()
+    for key in ageGroup:
+        temp = ageGroup[key]
+        quicksort(temp, 0, len(temp) - 1)
+        sortedDF = pd.DataFrame(temp)
+        fileName = key.replace('<', 'lessThan')
+        fileName = fileName.replace('>', 'greaterThan')
+        fileName = fileName.replace('-', 'To')
+        fileName = fileName + 'AgeSorted.csv'
+        sortedDF.to_csv(fileName, index=False)
+    for key in genderGroup:
+        temp = genderGroup[key]
+        quicksort(temp, 0, len(temp) - 1)
+        sortedDF = pd.DataFrame(temp)
+        fileName = key + 'GenderSorted.csv'
+        sortedDF.to_csv(fileName, index=False)
+    for key in vaccineGroup:
+        temp = vaccineGroup[key]
+        quicksort(temp, 0, len(temp) - 1)
+        sortedDF = pd.DataFrame(temp)
+        fileName = key.replace('&', 'And')
+        fileName = fileName + 'VaccineSorted.csv'
+        sortedDF.to_csv(fileName, index=False)
+    toc = time.perf_counter()
+    print(f"Sorted all groups + created files in {toc - tic:0.4f} seconds")
+
+    # The death count
+    print("--------------------------------------------------")
+    print(deathCount)
+    print("--------------------------------------------------")
+    with open("deathCount.json", "w") as outfile:
+        json.dump(deathCount, outfile)
+
 
     # data = json.loads(pd.read_csv('SYMPTOMDATA.csv').to_json(orient='records'))
     # arr = data[0:1000000]
