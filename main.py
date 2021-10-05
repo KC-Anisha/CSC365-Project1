@@ -99,7 +99,6 @@ def swap(A, x, y):
     A[x], A[y] = A[y], A[x]
 
 
-
 def insertionSort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -116,9 +115,8 @@ def mergeSort(arr):
     if len(arr) > 1:
         # Finding the mid of the array
         mid = len(arr) // 2
-        # Dividing the array elements
+        # Dividing the array elements into 2 halves
         L = arr[:mid]
-        # into 2 halves
         R = arr[mid:]
         # Sorting the first half
         mergeSort(L)
