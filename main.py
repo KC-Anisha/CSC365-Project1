@@ -75,23 +75,23 @@ def task2(hashMap):
     return jsonForTask2
 
 
-def quicksort(aList, first, last):
+def quicksort(arr, first, last):
     if first < last:
-        pivot = partition(aList, first, last)
-        quicksort(aList, first, pivot - 1)
-        quicksort(aList, pivot + 1, last)
+        pivot = partition(arr, first, last)
+        quicksort(arr, first, pivot - 1)
+        quicksort(arr, pivot + 1, last)
 
 
-def partition(aList, first, last):
+def partition(arr, first, last):
     pivot = first + random.randrange(last - first + 1)
-    swap(aList, pivot, last)
+    swap(arr, pivot, last)
 
     for i in range(first, last):
-        if aList[i]["VAERS_ID"] <= aList[last]["VAERS_ID"]:
-            swap(aList, i, first)
+        if arr[i]["VAERS_ID"] <= arr[last]["VAERS_ID"]:
+            swap(arr, i, first)
             first += 1
 
-    swap(aList, first, last)
+    swap(arr, first, last)
     return first
 
 
@@ -102,8 +102,7 @@ def swap(A, x, y):
 def insertionSort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
-        # Move elements of arr[0..i-1], that are greater than key,
-        # to one position ahead of their current position
+        # Move elements of array with a greater VAERS_ID than key to one position ahead of their current position
         j = i - 1
         while j >= 0 and key["VAERS_ID"] < arr[j]["VAERS_ID"]:
             arr[j + 1] = arr[j]
@@ -113,16 +112,16 @@ def insertionSort(arr):
 
 def mergeSort(arr):
     if len(arr) > 1:
-        # Finding the mid of the array
         mid = len(arr) // 2
-        # Dividing the array elements into 2 halves
         L = arr[:mid]
         R = arr[mid:]
-        # Sorting the first half
         mergeSort(L)
-        # Sorting the second half
         mergeSort(R)
-        i = j = k = 0
+        # Traversal iterators
+        i = 0
+        j = 0
+        # Main list iterator
+        k = 0
         # Copy data to temp arrays L[] and R[]
         while i < len(L) and j < len(R):
             if L[i]["VAERS_ID"] < R[j]["VAERS_ID"]:
@@ -250,20 +249,60 @@ def doInsertionSort(array):
     testInsertionSort(arr, 10000)
 
     # Merge Sort on 100,000
-    # testInsertionSort(arr, 100000)
+    testInsertionSort(arr, 100000)
 
     # Merge Sort the entire dataset
-    # tic = time.perf_counter()
-    # insertionSort(arr)
-    # toc = time.perf_counter()
-    # print(f"Insertion sorted the entire set in {toc - tic:0.4f} seconds")
+    tic = time.perf_counter()
+    insertionSort(arr)
+    toc = time.perf_counter()
+    print(f"Insertion sorted the entire set in {toc - tic:0.4f} seconds")
 
     # Create a CSV of the entire Merge sorted set
-    # tic = time.perf_counter()
-    # pdObj = pd.DataFrame(arr)
-    # pdObj.to_csv('insertionSort.csv', index=False)
-    # toc = time.perf_counter()
-    # print(f"Created the Insertion sorted file in {toc - tic:0.4f} seconds")
+    tic = time.perf_counter()
+    pdObj = pd.DataFrame(arr)
+    pdObj.to_csv('insertionSort.csv', index=False)
+    toc = time.perf_counter()
+    print(f"Created the Insertion sorted file in {toc - tic:0.4f} seconds")
+
+
+def checkForDeath(patientSex, patientVaccine):
+    if lastID != patientRow["VAERS_ID"] or lastID == -1:
+        if patientRow["DIED"] == 'Y':
+            grouping[patientAge][patientSex][patientVaccine][1] += 1
+    return
+
+
+def checkForVaccineName(patientSex):
+    if patientRow['VAX_NAME'] == 'COVID19 (COVID19 (JANSSEN))':
+        patientVaccine = 'J&J'
+        grouping[patientAge][patientSex][patientVaccine][0].append(patientRow)
+        checkForDeath(patientSex, patientVaccine)
+    elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (MODERNA))':
+        patientVaccine = 'Moderna'
+        grouping[patientAge][patientSex][patientVaccine][0].append(patientRow)
+        checkForDeath(patientSex, patientVaccine)
+    elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (PFIZER-BIONTECH))':
+        patientVaccine = 'Pfizer'
+        grouping[patientAge][patientSex][patientVaccine][0].append(patientRow)
+        checkForDeath(patientSex, patientVaccine)
+    else:
+        patientVaccine = 'Unknown'
+        grouping[patientAge][patientSex][patientVaccine][0].append(patientRow)
+        checkForDeath(patientSex, patientVaccine)
+    return
+
+
+def checkForGender():
+    if patientRow['SEX'] == 'M':
+        patientSex = 'Male'
+        checkForVaccineName(patientSex)
+    elif patientRow['SEX'] == 'F':
+        patientSex = 'Female'
+        checkForVaccineName(patientSex)
+    else:
+        patientSex = 'Unknown'
+        checkForVaccineName(patientSex)
+    return
 
 
 if __name__ == '__main__':
@@ -285,6 +324,8 @@ if __name__ == '__main__':
     # Let's keep track of the highest number of symptoms and its id [113]
     highestNumOfSymptoms = 0
     idOfMostSymptoms = 0
+
+    # covidJsonData = json.loads(pd.read_csv('VAERS_COVID_DataAugust2021.csv').to_json(orient='records'))
 
     # Loop through the data and store it in a hashmap
     tic = time.perf_counter()
@@ -333,7 +374,7 @@ if __name__ == '__main__':
     # print("Highest number of symptoms is: " + str(highestNumOfSymptoms))
     # print("VAERS ID with the highest number of symptoms: " + str(idOfMostSymptoms))
 
-    # print(len(hashMap))
+    print(len(hashMap))
 
     # Let's convert this HashMap of JSONs to a CSV file - for task 1
     tic = time.perf_counter()
@@ -359,103 +400,102 @@ if __name__ == '__main__':
     print("--------------------------------------------------")
     doInsertionSort(task2Json)
 
-    # Task 3 - Group, sort and count number of deaths
-    deathCount = {'<1': 0, '1-3': 0, '4-11': 0, '12-18': 0, '19-30':0, '31-40':0, '41-50':0, '51-60':0,
-                '61-70':0, '71-80':0, '>80':0, 'Unknown': 0}
-    ageGroup = {'<1': [], '1-3': [], '4-11': [], '12-18': [], '19-30':[], '31-40':[], '41-50':[], '51-60':[],
-                '61-70':[], '71-80':[], '>80':[], 'Unknown': []}
-    genderGroup = {'Male': [], 'Female': [], 'Unknown': []}
-    vaccineGroup = {'J&J': [], 'Moderna': [], 'Pfizer': [], 'Unknown': []}
+    task2Json = json.loads(pd.read_csv('SYMPTOMDATA.csv').to_json(orient='records'))
 
+    # Testing sorts on smaller subsets --> the array is shuffled before feeding it to the sorting alogrithms
+    testArray = copy.deepcopy(task2Json)
+    print("--------------------------------------------------")
+    testQuickSort(testArray, 1000)
+    print("--------------------------------------------------")
+    testInsertionSort(testArray, 1000)
+    print("--------------------------------------------------")
+    testMergeSort(testArray, 1000)
+
+    # Task 3 - Group, sort and count number of deaths
+    # grouping = {'AgeGroup': {'Gender': {'VaccineName': [[Patient, Patient],DeathCount]}}}
+    grouping = {'<1': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                       'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                       'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '1-3': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                        'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                        'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '4-11': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                         'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                         'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '12-18': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '19-30': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '31-40': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '41-50': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '51-60': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '61-70': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '71-80': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                          'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                '>80': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                        'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                        'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}},
+                'Unknown': {'Male': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                            'Female': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]},
+                            'Unknown': {'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown': [[], 0]}}}
     lastID = -1
 
     # Let's loop through the dataset - Array of JSON
     tic = time.perf_counter()
     for patientRow in task2Json:
-        # Deal with age first, including deaths - then gender - then vaccine group
+        # Deal with age first - then gender - then vaccine group and deaths
         if patientRow["AGE_YRS"] is None:
-            ageGroup['Unknown'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['Unknown'] += 1
+            patientAge = 'Unknown'
+            checkForGender()
         elif patientRow["AGE_YRS"] < 1:
-            ageGroup['<1'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['<1'] += 1
+            patientAge = '<1'
+            checkForGender()
         elif 1 <= patientRow["AGE_YRS"] <= 3:
-            ageGroup['1-3'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['1-3'] += 1
+            patientAge = '1-3'
+            checkForGender()
         elif 4 <= patientRow["AGE_YRS"] <= 11:
-            ageGroup['4-11'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['4-11'] += 1
+            patientAge = '4-11'
+            checkForGender()
         elif 12 <= patientRow["AGE_YRS"] <= 18:
-            ageGroup['12-18'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['12-18'] += 1
+            patientAge = '12-18'
+            checkForGender()
         elif 19 <= patientRow["AGE_YRS"] <= 30:
-            ageGroup['19-30'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['19-30'] += 1
+            patientAge = '19-30'
+            checkForGender()
         elif 31 <= patientRow["AGE_YRS"] <= 40:
-            ageGroup['31-40'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['31-40'] += 1
+            patientAge = '31-40'
+            checkForGender()
         elif 41 <= patientRow["AGE_YRS"] <= 50:
-            ageGroup['41-50'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['41-50'] += 1
+            patientAge = '41-50'
+            checkForGender()
         elif 51 <= patientRow["AGE_YRS"] <= 60:
-            ageGroup['51-60'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['51-60'] += 1
+            patientAge = '51-60'
+            checkForGender()
         elif 61 <= patientRow["AGE_YRS"] <= 70:
-            ageGroup['61-70'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['61-70'] += 1
+            patientAge = '61-70'
+            checkForGender()
         elif 71 <= patientRow["AGE_YRS"] <= 80:
-            ageGroup['71-80'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['71-80'] += 1
+            patientAge = '71-80'
+            checkForGender()
         elif patientRow["AGE_YRS"] > 80:
-            ageGroup['>80'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['>80'] += 1
+            patientAge = '>80'
+            checkForGender()
         else:
-            ageGroup['Unknown'].append(patientRow)
-            if lastID != patientRow["VAERS_ID"] or lastID == -1:
-                if patientRow["DIED"] == 'Y':
-                    deathCount['Unknown'] += 1
+            patientAge = 'Unknown'
+            checkForGender()
         # Update lastID so we don't count death multiple times for same patient
         lastID = patientRow["VAERS_ID"]
-        # Deal with gender grouping
-        if patientRow['SEX'] == 'M':
-            genderGroup['Male'].append(patientRow)
-        elif patientRow['SEX'] == 'F':
-            genderGroup['Female'].append(patientRow)
-        else:
-            genderGroup['Unknown'].append(patientRow)
-        # Deal with Vaccine grouping
-        if patientRow['VAX_NAME'] == 'COVID19 (COVID19 (JANSSEN))':
-            vaccineGroup['J&J'].append(patientRow)
-        elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (MODERNA))':
-            vaccineGroup['Moderna'].append(patientRow)
-        elif patientRow['VAX_NAME'] == 'COVID19 (COVID19 (PFIZER-BIONTECH))':
-            vaccineGroup['Pfizer'].append(patientRow)
-        else:
-            vaccineGroup['Unknown'].append(patientRow)
 
     toc = time.perf_counter()
     print("--------------------------------------------------")
@@ -463,41 +503,95 @@ if __name__ == '__main__':
 
     # Sort the data groups
     tic = time.perf_counter()
-    for key in ageGroup:
-        temp = ageGroup[key]
-        quicksort(temp, 0, len(temp) - 1)
-        sortedDF = pd.DataFrame(temp)
-        fileName = key.replace('<', 'lessThan')
-        fileName = fileName.replace('>', 'greaterThan')
-        fileName = fileName.replace('-', 'To')
-        fileName = fileName + 'AgeSorted.csv'
-        sortedDF.to_csv(fileName, index=False)
-    for key in genderGroup:
-        temp = genderGroup[key]
-        quicksort(temp, 0, len(temp) - 1)
-        sortedDF = pd.DataFrame(temp)
-        fileName = key + 'GenderSorted.csv'
-        sortedDF.to_csv(fileName, index=False)
-    for key in vaccineGroup:
-        temp = vaccineGroup[key]
-        quicksort(temp, 0, len(temp) - 1)
-        sortedDF = pd.DataFrame(temp)
-        fileName = key.replace('&', 'And')
-        fileName = fileName + 'VaccineSorted.csv'
-        sortedDF.to_csv(fileName, index=False)
+    for ageGroup in grouping:
+        age = ageGroup
+        for gender in grouping[age]:
+            sex = gender
+            for vaccine in grouping[age][sex]:
+                vaccineName = vaccine
+                temp = grouping[age][sex][vaccineName][0]
+                quicksort(temp, 0, len(temp) - 1)
+                sortedDF = pd.DataFrame(temp)
+                print("--------------------------------------------------")
+                print("Sorted " + vaccineName + " Vaccine with gender " + sex + " of age " + age + ":")
+                print(sortedDF)
     toc = time.perf_counter()
-    print(f"Sorted all groups + created files in {toc - tic:0.4f} seconds")
+    print(f"Sorted all groups in {toc - tic:0.4f} seconds")
 
-    # The death count
     print("--------------------------------------------------")
-    print(deathCount)
+    print("Death breakdown by everything")
     print("--------------------------------------------------")
-    with open("deathCount.json", "w") as outfile:
-        json.dump(deathCount, outfile)
+    for ageGroup in grouping:
+        age = ageGroup
+        for gender in grouping[age]:
+            sex = gender
+            for vaccine in grouping[age][sex]:
+                vaccineName = vaccine
+                death = grouping[age][sex][vaccineName][1]
+                print("Death count for " + vaccineName + " Vaccine with gender " + sex + " of age " + age + " = " + str(death))
 
+    print("--------------------------------------------------")
+    print("Death breakdown by age and gender")
+    print("--------------------------------------------------")
+    for ageGroup in grouping:
+        age = ageGroup
+        for gender in grouping[age]:
+            sex = gender
+            death = 0
+            for vaccine in grouping[age][sex]:
+                vaccineName = vaccine
+                death += grouping[age][sex][vaccineName][1]
+            print("Death count for gender " + sex + " of age " + age + " = " + str(death))
 
-    # data = json.loads(pd.read_csv('SYMPTOMDATA.csv').to_json(orient='records'))
-    # arr = data[0:1000000]
-    # print("DOING")
-    # insertionSort(arr)
-    # print("DONE")
+    print("--------------------------------------------------")
+    print("Death breakdown by vaccine")
+    print("--------------------------------------------------")
+    # 'J&J': [[], 0], 'Moderna': [[], 0], 'Pfizer': [[], 0], 'Unknown':
+    jjDeath = modernaDeath = pfizerDeath = unknownVaccineDeath = 0
+    for age in grouping:
+        for sex in grouping[age]:
+            jjDeath += grouping[age][sex]['J&J'][1]
+            modernaDeath += grouping[age][sex]['Moderna'][1]
+            pfizerDeath += grouping[age][sex]['Pfizer'][1]
+            unknownVaccineDeath += grouping[age][sex]['Unknown'][1]
+    print("Death count for J&J = " + str(jjDeath))
+    print("Death count for Moderna = " + str(modernaDeath))
+    print("Death count for Pfizer = " + str(pfizerDeath))
+    print("Death count for Unknown vaccine = " + str(unknownVaccineDeath))
+
+    print("--------------------------------------------------")
+    print("Death breakdown by gender")
+    print("--------------------------------------------------")
+    maleDeath = femaleDeath = unknownGenderDeath = 0
+    for age in grouping:
+        for vaccine in grouping[age]['Male']:
+            maleDeath += grouping[age]['Male'][vaccine][1]
+            femaleDeath += grouping[age]['Female'][vaccine][1]
+            unknownGenderDeath += grouping[age]['Unknown'][vaccine][1]
+    print("Death count for Males = " + str(maleDeath))
+    print("Death count for Females = " + str(femaleDeath))
+    print("Death count for Unknown Gender = " + str(unknownGenderDeath))
+
+    print("--------------------------------------------------")
+    print("Death breakdown by age")
+    print("--------------------------------------------------")
+    for ageGroup in grouping:
+        age = ageGroup
+        death = 0
+        for gender in grouping[age]:
+            sex = gender
+            for vaccine in grouping[age][sex]:
+                vaccineName = vaccine
+                death += grouping[age][sex][vaccineName][1]
+        print("Death count for age " + age + " = " + str(death))
+
+    print("--------------------------------------------------")
+    totalDeath = 0
+    for ageGroup in grouping:
+        age = ageGroup
+        for gender in grouping[age]:
+            sex = gender
+            for vaccine in grouping[age][sex]:
+                vaccineName = vaccine
+                totalDeath += grouping[age][sex][vaccineName][1]
+    print("Total deaths = " + str(totalDeath))
